@@ -368,23 +368,8 @@ For **TestNet**, set `LOCAL_NET = False` in the test files.
 
 ---
 
-## 🤝 Contributing
 
-We welcome contributions to build the open standard for decentralized energy microgrids.
 
-1. **Fork** the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit your changes: `git commit -m 'Add: your feature description'`
-4. Push to the branch: `git push origin feat/your-feature`
-5. Open a **Pull Request** with a clear description
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
 
 <div align="center">
 
