@@ -19,7 +19,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '13ceb0bdfde20b0c64765791628b
 db_url = os.getenv("NEON_DATABASE_URL")
 if not db_url:
     # Fallback to local sqlite for development if needed, but Neon is required for prod
-    db_url = 'sqlite:///main.db'
+    # Use /tmp since Vercel's root file system is read-only
+    db_url = 'sqlite:////tmp/main.db'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
