@@ -390,6 +390,5 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 **Eco Bazzar** — Built to revolutionize planetary energy flow.
 
-Made with 💚 by the Eco Bazzar Team
 
 </div>
