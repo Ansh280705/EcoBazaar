@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 50vh; text-align: center;">
+    <div style="background: #1e293b; padding: 3rem; border-radius: 16px; border: 1px solid rgba(245, 158, 11, 0.2); max-width: 600px;">
+        <svg style="color: #f59e0b; width: 64px; height: 64px; margin-bottom: 1.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 1rem;">Verification Pending</h2>
+        <p style="color: #94a3b8; font-size: 1.1rem; line-height: 1.6;">
+            Your seller account is currently under review by our platform administrators. 
+            Once approved, you will gain full access to the Energy Generation Panel and the EcoBazzar Marketplace.
+        </p>
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('about') }}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                Learn more about our seller verification process &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

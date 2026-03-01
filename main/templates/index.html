@@ -1,0 +1,461 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    /* Add Web3 SaaS Dashboard styles */
+    body {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        padding-top: 6rem; /* Account for fixed navbar */
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .dashboard-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    
+    .dashboard-header p {
+        color: #94a3b8;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+
+    /* SECTION 1: TOP STATS ROW */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: #1e293b;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Accents for cards */
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+    }
+    
+    .stat-card.blue::before { background: #3b82f6; }
+    .stat-card.yellow::before { background: #f59e0b; }
+    .stat-card.green::before { background: #22c55e; }
+    .stat-card.purple::before { background: #8b5cf6; }
+
+    .stat-title {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f8fafc;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+
+    .stat-subtext {
+        font-size: 0.875rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    /* SECTION 2: ACTION + ANALYTICS */
+    .analytics-actions-grid {
+        display: grid;
+        grid-template-columns: 60% calc(40% - 1.5rem);
+        gap: 1.5rem;
+    }
+
+    .panel {
+        background: #1e293b;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #f8fafc;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chart-container {
+        height: 300px;
+        width: 100%;
+        position: relative;
+    }
+
+    .actions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .action-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.875rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btn-primary-green {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .btn-primary-green:hover {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-outline-yellow {
+        background: transparent;
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .btn-outline-yellow:hover {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-outline-blue {
+        background: transparent;
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .btn-outline-blue:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .action-helper {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-align: center;
+    }
+
+    /* SECTION 3: PRODUCTION HISTORY */
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        text-align: left;
+        padding: 1rem;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(15, 23, 42, 0.3);
+    }
+
+    .history-table td {
+        padding: 1rem;
+        color: #e2e8f0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.95rem;
+    }
+
+    .history-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        color: #64748b;
+    }
+
+    .empty-state svg {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 900px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .analytics-actions-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    {{ display_messages() }}
+    
+    <div class="dashboard-header">
+        <h2>Energy Control Panel</h2>
+        <p>Manage your solar energy production and trading</p>
+    </div>
+
+    <!-- SECTION 1: TOP STATS ROW -->
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="stat-title">Available Units</div>
+            <div class="stat-value">{{ current_user.units }} <span class="stat-subtext">/ 35 Capacity</span></div>
+        </div>
+        
+        <div class="stat-card yellow">
+            <div class="stat-title">Units Listed for Sale</div>
+            <div class="stat-value">{{ listed_units }} <span class="stat-subtext">Units</span></div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-title">Lifetime Generated</div>
+            <div class="stat-value">{{ total_generated }} <span class="stat-subtext">Units</span></div>
+        </div>
+
+        <div class="stat-card purple">
+            <div class="stat-title">Total Transactions</div>
+            <div class="stat-value">0 <span class="stat-subtext">Completed</span></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: ACTION + ANALYTICS -->
+    <div class="analytics-actions-grid">
+        <!-- Chart Panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                Energy Activity
+            </div>
+            <div class="chart-container">
+                <canvas id="energyActivityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                Quick Actions
+            </div>
+            <div class="actions-list">
+                <div class="action-group">
+                    <a href="{{ url_for('generate_energy') }}" class="action-btn btn-primary-green">Generate Energy</a>
+                    <span class="action-helper">Simulate solar panel output</span>
+                </div>
+                
+                <div class="action-group">
+                    <a href="{{ url_for('seller_page') }}" class="action-btn btn-outline-yellow">Sell Units</a>
+                    <span class="action-helper">Create a new sell order</span>
+                </div>
+
+                <div class="action-group">
+                    <a href="{{ url_for('buyer_page') }}" class="action-btn btn-outline-blue">Buy Units</a>
+                    <span class="action-helper">Purchase from other users</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: PRODUCTION HISTORY -->
+    <div class="panel">
+        <div class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Production History
+        </div>
+        
+        {% if productions %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Units Generated</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in productions %}
+                    <tr>
+                        <td>{{ prod.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td style="color: #22c55e; font-weight: 500;">+ {{ prod.units_generated }} kWh</td>
+                        <td><span class="status-badge">Completed</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <p>No energy generated yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Chart.js for Energy Activity Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if productions %}
+        // Extract data for chart from production history (reverse order so oldest is first)
+        const rawData = [
+            {% for prod in productions %}
+                {
+                    date: "{{ prod.timestamp.strftime('%m-%d %H:%M') }}",
+                    units: {{ prod.units_generated }}
+                },
+            {% endfor %}
+        ].reverse();
+        
+        const labels = rawData.map(item => item.date);
+        const data = rawData.map(item => item.units);
+    {% else %}
+        // Dummy data if empty
+        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const data = [0, 0, 0, 0, 0, 0, 0];
+    {% endif %}
+
+    const ctx = document.getElementById('energyActivityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Units Generated (kWh)',
+                data: data,
+                borderColor: '#22c55e',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#1e293b',
+                pointBorderColor: '#22c55e',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#94a3b8',
+                    bodyColor: '#f8fafc',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' kWh';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#64748b',
+                        maxTicksLimit: 7
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#64748b',
+                        padding: 10
+                    },
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 0 // No heavy animation
+            }
+        }
+    });
+});
+</script>
+{% endblock content %}

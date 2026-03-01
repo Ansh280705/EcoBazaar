@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    body { background-color: #141F1F !important; color: #D4E3E3 !important; }
+    .page-container { max-width: 600px; margin: 0 auto; padding: 2rem; padding-top: 6rem; display: flex; flex-direction: column; gap: 2rem; }
+    .page-header h2 { font-size: 3.5rem; font-weight: 900; color: #ffffff; margin: 0; letter-spacing: -1.5px; background: linear-gradient(135deg, #ffffff 0%, #9FC0C1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; text-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .page-header p { color: #9FC0C1; margin-top: 1rem; font-size: 1.25rem; font-weight: 500; letter-spacing: 0.5px; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto; }
+    
+    .panel { background: rgba(28, 43, 43, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(159, 192, 193, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);; border-radius: 20px; padding: 2.5rem; border: 1px solid rgba(159, 192, 193, 0.1); }
+    
+    .form-group { margin-bottom: 1.5rem; text-align: left; }
+    .form-label { display: block; font-weight: 500; font-size: 0.95rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    
+    .form-input {
+        width: 100%;
+        background: #141F1F;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #D4E3E3;
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .form-input:focus { outline: none; border-color: #9FC0C1; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+    
+    .btn-submit { display: block; width: 100%; padding: 1rem; text-align: center; background: #9FC0C1; color: #D4E3E3; border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; margin-top: 2rem; }
+    .btn-submit:hover { background: #9FC0C1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+    
+    .stats-info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px dashed rgba(59, 130, 246, 0.3);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        color: #9FC0C1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .stats-row { display: flex; justify-content: space-between; align-items: center; }
+    .stats-val { font-size: 1.1rem; font-weight: bold; color: #9FC0C1; }
+.dashboard-header, .page-header { text-align: center; margin-bottom: 2rem; width: 100%; }
+</style>
+
+<div class="page-container">
+    {{ display_messages() }}
+    
+    <div class="page-header">
+        <h2>Simulate Energy Output</h2>
+        <p>Log newly generated solar output to your battery storage</p>
+    </div>
+
+    <div class="panel">
+        <div class="stats-info">
+            <div class="stats-row">
+                <span>Maximum Capacity</span>
+                <span class="stats-val">{{ current_user.battery_capacity }} kWh</span>
+            </div>
+            <div class="stats-row">
+                <span>Available Space</span>
+                <span class="stats-val" style="color: #f59e0b;">{{ current_user.battery_capacity - current_user.available_units }} kWh</span>
+            </div>
+            <div class="stats-row" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(59, 130, 246, 0.2);">
+                <span>Current Balance</span>
+                <span class="stats-val">{{ current_user.available_units }} kWh</span>
+            </div>
+        </div>
+        
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{ form.kwh.label(class="form-label") }}
+                {{ form.kwh(class="form-input", placeholder="Amount to add to battery profile (max " ~ (current_user.battery_capacity - current_user.available_units) ~ ")") }}
+                {% for error in form.kwh.errors %}
+                    <span style="display: block; color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            {{ form.submit(class="btn-submit", value="Generate") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

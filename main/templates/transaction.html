@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    body { background-color: #141F1F !important; color: #D4E3E3 !important; }
+    .page-container { max-width: 1200px; margin: 0 auto; padding: 2rem; padding-top: 6rem; display: flex; flex-direction: column; gap: 2rem; }
+    .page-header h2 { font-size: 3.5rem; font-weight: 900; color: #ffffff; margin: 0; letter-spacing: -1.5px; background: linear-gradient(135deg, #ffffff 0%, #9FC0C1 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; text-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .page-header p { color: #9FC0C1; margin-top: 1rem; font-size: 1.25rem; font-weight: 500; letter-spacing: 0.5px; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto; }
+    
+    
+    .panel-title { font-size: 1.125rem; font-weight: 600; color: #D4E3E3; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th { text-align: left; padding: 1rem; color: #9FC0C1; font-size: 0.875rem; font-weight: 600; border-bottom: 1px solid rgba(159, 192, 193, 0.1); background: rgba(20, 31, 31, 0.3); }
+    .history-table td { padding: 1rem; color: #9FC0C1; border-bottom: 1px solid rgba(159, 192, 193, 0.1); font-size: 0.95rem; }
+    .history-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    
+    .status-badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+    
+    .tx-type-credit { color: #22c55e; font-weight: 600; }
+    .tx-type-debit { color: #ef4444; font-weight: 600; }
+    
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; color: #64748b; }
+
+    .panel {
+        background: rgba(28, 43, 43, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(159, 192, 193, 0.1);
+        border-radius: 32px;
+        padding: 2rem;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+.dashboard-header, .page-header { text-align: center; margin-bottom: 2rem; width: 100%; }
+</style>
+
+<div class="page-container">
+   {{ display_messages() }}
+    
+    <div class="page-header">
+        <h2>Ledger</h2>
+        <p>Your complete transaction history across the Eco Bazzar network</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Network Transactions
+        </div>
+        
+        {% if history %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Counterparty</th>
+                        <th>Volume</th>
+                        <th>Status</th>
+                        <th>Verification (SHA-256)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in history %}
+                        {% set is_buyer = (h.buyer_id == current_user.id) %}
+                        {% set is_admin = (current_user.role == 'admin') %}
+                        
+                        <tr>
+                            <td>{{ h.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            
+                            {% if is_admin %}
+                                <td style="color: #9FC0C1;">Transfer</td>
+                            {% else %}
+                                <td>
+                                    {% if is_buyer %}
+                                        <span class="tx-type-credit">Purchase</span>
+                                    {% else %}
+                                        <span class="tx-type-debit">Sale</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            
+                            <td title="{{ h.buyer.email if is_admin else (h.seller.email if is_buyer else h.buyer.email) }}">
+                                {{ (h.seller.email if is_buyer else h.buyer.email)[:15] }}...
+                            </td>
+                            
+                            <td style="font-weight: 500;">{{ h.units }} kWh</td>
+                            <td><span class="status-badge">Immutable</span></td>
+                            <td>
+                                <div style="font-family: monospace; font-size: 0.7rem; color: #64748b; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px;">
+                                    <div>TX: {{ h.transaction_hash[:16] if h.transaction_hash else "LEGACY_RECORD" }}...</div>
+                                    <div style="opacity: 0.5;">PREV: {{ h.previous_hash[:16] if h.previous_hash else "0000000000000000" }}...</div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; margin-bottom: 1rem;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <p>No transaction history found on the ledger.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
