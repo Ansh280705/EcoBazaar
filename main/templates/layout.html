@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eco Bazzar</title>
+    <link href="static/style.css" rel="stylesheet" type="text/css">
+    <script src="static/home_page.js"></script>
+    <script src="static/transaction.js"></script>
+    <link rel="icon" href="static/Resources/images/logo_ecobazzar.png" type="image/png">
+    
+    <!-- DM Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Font Enforcement */
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, th, td,
+        article, aside, canvas, details, embed, 
+        figure, figcaption, footer, header, hgroup, 
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video, button, input, textarea, select {
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+        }
+
+        /* Prevent icon font override */
+        .material-symbols-outlined, [class^="icon-"], [class*=" icon-"], svg * {
+            font-family: inherit !important;
+        }
+
+        /* Instant Loader Styles in Head */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #141F1F;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1), visibility 0.6s;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(159, 192, 193, 0.1);
+            border-top: 4px solid #9FC0C1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loader-wrapper.loaded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+    </style>
+</head>
+{% from "_flash_messages.html" import display_messages %}
+<body>
+
+<style>
+/* New Navbar Styling */
+.navbar-modern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(20, 31, 31, 0.9); /* Deep midnight blue, transparent */
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid #9FC0C1; /* Green accent border */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 4vw;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 10px;
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+    color: #9FC0C1; /* Energy/Block blue */
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.brand-text {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #D4E3E3;
+    letter-spacing: 0.5px;
+}
+.brand-text span {
+    color: #D4E3E3; /* Green accent on Chain */
+}
+
+/* Center Menu Items */
+.nav-center {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #9FC0C1;
+    font-size: 1.1rem;
+    font-weight: 500;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-item:hover {
+    color: #D4E3E3;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #D4E3E3;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(186, 192, 149, 0.5);
+}
+
+.nav-item:hover::after,
+.nav-item.active::after {
+    width: 100%;
+}
+
+.nav-item.active {
+    color: #D4E3E3;
+    text-shadow: 0 0 10px rgba(186, 192, 149, 0.3);
+}
+
+/* User Profile Area (Right) */
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(159, 192, 193, 0.1);
+    border: 1px solid rgba(159, 192, 193, 0.2);
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #D4E3E3;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.user-btn:hover {
+    background: rgba(159, 192, 193, 0.2);
+    border-color: rgba(186, 192, 149, 0.4);
+    box-shadow: 0 4px 12px rgba(186, 192, 149, 0.15);
+}
+
+.user-btn.logout {
+    border-color: rgba(239, 68, 68, 0.4);
+}
+.user-btn.logout:hover {
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+/* Mobile Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: #1c2b2b;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+@media (max-width: 860px) {
+    .hamburger { display: flex; }
+    .nav-center { display: none; }
+    
+    .nav-center.active-mobile {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(20, 31, 31, 0.98);
+        padding: 20px;
+        box-sizing: border-box;
+        border-bottom: 2px solid #D4E3E3;
+        gap: 1.5rem;
+        align-items: flex-start;
+        animation: slideDown 0.3s ease forwards;
+    }
+}
+
+.navbar-modern.hidden-nav {
+    transform: translateY(-100%);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Global Loader - Moved to Head */
+
+/* Basic body styling for layout spacing */
+.container {
+    padding-top: 80px; 
+    min-height: calc(100vh - 150px);
+}
+</style>
+
+<div id="loader-wrapper">
+    <div class="spinner"></div>
+</div>
+
+<div class="navbar-modern" id="main-navbar">
+    <!-- BRAND LOGO -->
+    <a href="/about" class="nav-brand">
+        <img src="static/Resources/images/logo_ecobazzar.png" alt="Logo" style="height: 48px; width: auto; object-fit: contain;">
+        <span class="brand-text">Eco<span>Bazzar</span></span>
+    </a>
+
+    <!-- CENTER MENU -->
+    <div class="nav-center" id="mobile-menu">
+        {% if current_user %}
+            <a href="/home" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </a>
+            
+            {% if current_user.role == 'buyer' or current_user.role == 'admin' %}
+            <a href="/marketplace" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                Marketplace
+            </a>
+            <a href="/energy-map" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Energy Map
+            </a>
+            {% endif %}
+
+            <a href="/leaderboard" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L9 9l-8 1 6 6-2 8 7-4 7 4-2-8 6-6-8-1-3-8z"></path></svg>
+                Leaderboard
+            </a>
+
+            <a href="/transactions" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Transactions
+            </a>
+        {% endif %}
+        
+        <a href="/about" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            About
+        </a>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="nav-right" id="app-auth-area">
+        {% if current_user.is_authenticated %}
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="color: #9FC0C1; font-size: 0.9rem;">{{ current_user.email }}</span>
+                <a href="{{ url_for('logout') }}" class="user-btn logout">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('sign_in') }}" class="user-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Sign In
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- HAMBURGER ICON -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('active-mobile');
+    }
+
+    // High-end Loader Logic: Minimum 1.5s visibility
+    const loaderStartTime = Date.now();
+    window.addEventListener('load', () => {
+        const elapsedTime = Date.now() - loaderStartTime;
+        const delay = Math.max(0, 1500 - elapsedTime);
+        
+        setTimeout(() => {
+            const loader = document.getElementById('loader-wrapper');
+            if (loader) loader.classList.add('loaded');
+        }, delay);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-center > .nav-item');
+        
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (currentPath === href || (href !== '/' && currentPath.startsWith(href))) {
+                item.classList.add('active');
+            }
+        });
+
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('main-navbar');
+        
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 70) {
+                navbar.classList.add('hidden-nav');
+            } else {
+                navbar.classList.remove('hidden-nav');
+            }
+            lastScrollTop = scrollTop;
+        });
+    });
+</script>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<div class="footer" style="padding: 2rem; text-align: center; color: #64748b;">
+    <p>2024 &copy; Eco Bazzar. All rights reserved.</p>
+</div>
+
+</body>
+</html>
