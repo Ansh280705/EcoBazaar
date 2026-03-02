@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    body { background-color: #141F1F !important; color: #D4E3E3 !important; }
+    .page-container { max-width: 800px; margin: 0 auto; padding: 2rem; padding-top: 6rem; display: flex; flex-direction: column; gap: 2rem; }
+    .page-header h2 { font-size: 2rem; font-weight: 700; color: #D4E3E3; margin: 0; letter-spacing: -0.5px; text-align: center; }
+    .page-header p { color: #9FC0C1; margin-top: 0.5rem; font-size: 1rem; text-align: center; }
+    
+    .panel { background: rgba(28, 43, 43, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(159, 192, 193, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);; border-radius: 20px; padding: 2.5rem; border: 1px solid rgba(159, 192, 193, 0.1); }
+    
+    .form-group { margin-bottom: 1.5rem; text-align: left; }
+    .form-label { display: block; font-weight: 500; font-size: 0.95rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+    
+    .form-input {
+        width: 100%;
+        background: #141F1F;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #D4E3E3;
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .form-input:focus { outline: none; border-color: #9FC0C1; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+    
+    .btn-submit { display: block; width: 100%; padding: 1rem; text-align: center; background: #9FC0C1; color: #D4E3E3; border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; margin-top: 2rem; }
+    .btn-submit:hover { background: #9FC0C1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+    
+    .order-summary {
+        background: rgba(20, 31, 31, 0.5);
+        border: 1px solid rgba(159, 192, 193, 0.1);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    .summary-row { display: flex; justify-content: space-between; padding: 0.75rem 0; font-size: 0.95rem; border-bottom: 1px solid rgba(159, 192, 193, 0.1); }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-label { color: #9FC0C1; }
+    .summary-val { color: #D4E3E3; font-weight: 600; }
+    
+    #estimated-cost { color: #9FC0C1; font-size: 1.25rem; font-weight: bold; }
+</style>
+
+<div class="page-container">
+    {{ display_messages() }}
+    
+    <div class="page-header">
+        <h2>Secure Checkout</h2>
+        <p>You are purchasing clean energy from the Eco Bazzar network</p>
+    </div>
+
+    <div class="panel">
+        <div class="order-summary">
+            <h3 style="font-size: 1.1rem; color: #D4E3E3; margin-bottom: 1rem;">Listing Details</h3>
+            
+            <div class="summary-row">
+                <span class="summary-label">Seller</span>
+                <span class="summary-val">{{ seller.email }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Available Capacity</span>
+                <span class="summary-val">{{ order.units_listed }} kWh</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Price Per Unit</span>
+                <span class="summary-val">₹ {{ "%.2f"|format(order.price_per_unit) }}</span>
+            </div>
+            
+            <div class="summary-row" style="margin-top: 0.5rem; padding-top: 1rem; border-top: 1px dashed rgba(159, 192, 193, 0.2);">
+                <span class="summary-label">Total Estimated Cost</span>
+                <span class="summary-val" id="estimated-cost">₹ 0.00</span>
+            </div>
+        </div>
+        
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{ form.units.label(class="form-label") }}
+                {{ form.units(class="form-input", placeholder="Enter amount to purchase (max " ~ order.units_listed ~ ")", id="purchase-units") }}
+                {% for error in form.units.errors %}
+                    <span style="display: block; color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">{{ error }}</span>
+                {% endfor %}
+            </div>
+            
+            {{ form.submit(class="btn-submit", value="Confirm Purchase") }}
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('purchase-units');
+        const estCost = document.getElementById('estimated-cost');
+        const pricePerUnit = ₹ {{ order.price_per_unit }};
+        
+        input.addEventListener('input', function() {
+            const units = parseInt(this.value) || 0;
+            const total = units * pricePerUnit;
+            estCost.textContent = '' + total.toFixed(2);
+        });
+    });
+</script>
+{% endblock %}
