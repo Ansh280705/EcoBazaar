@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    body { background-color: #141F1F !important; color: #D4E3E3 !important; }
+    .map-container { max-width: 1200px; margin: 0 auto; padding: 2rem; padding-top: 6rem; }
+    #map { height: 600px; width: 100%; border-radius: 32px; border: 1px solid rgba(159, 192, 193, 0.2); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); }
+    .map-header { text-align: center; margin-bottom: 2rem; }
+    .map-header h2 { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #9FC0C1 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .leaflet-popup-content-wrapper { background: rgba(28, 43, 43, 0.95); backdrop-filter: blur(10px); color: #D4E3E3; border: 1px solid rgba(159, 192, 193, 0.2); border-radius: 16px; }
+    .leaflet-popup-tip { background: rgba(28, 43, 43, 0.95); }
+    .buy-btn { background: #3b82f6; color: white; padding: 5px 12px; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: 600; }
+</style>
+
+<div class="map-container">
+    <div class="map-header">
+        <h2>Live Energy Map</h2>
+        <p>Find renewable energy sellers in your region</p>
+    </div>
+    
+    <div id="map"></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // India default
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
+
+    fetch('/api/map-data')
+        .then(res => res.json())
+        .then(data => {
+            data.sellers.forEach(seller => {
+                const marker = L.marker([seller.lat, seller.lng]).addTo(map);
+                
+                let popupContent = `<strong style="color: #9FC0C1">${seller.type} Energy Station</strong><br>`;
+                
+                if (seller.energy > 0) {
+                    popupContent += `Available: ${seller.energy} kWh<br>Price: ₹${seller.price}/kWh<br>`;
+                    popupContent += `<a href="/checkout_page?order_id=${seller.id}" class="buy-btn">Buy Now</a>`;
+                } else {
+                    popupContent += `<span style="color: #64748b;">No active listings currently.</span>`;
+                }
+                
+                marker.bindPopup(popupContent);
+            });
+            
+            if (data.sellers.length > 0) {
+                const group = new L.featureGroup(data.sellers.map(s => L.marker([s.lat, s.lng])));
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        });
+</script>
+{% endblock content %}
