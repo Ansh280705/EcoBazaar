@@ -1,0 +1,436 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+/* Landing Page Styles */
+.video-bg { height: 100vh; position: fixed; top: 0; left: 0; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+.video-bg video {
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+}
+/* Subtle dark charcoal overlay for the video bg to maintain readability */
+.video-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(20, 31, 31, 0.6);
+}
+body { background: transparent !important; color: #D4E3E3 !important; }
+.landing-hero {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: transparent !important;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.hero-content {
+    z-index: 1;
+    animation: fadein 1s ease-out;
+}
+
+.hero-title {
+    font-size: 3.5vw;
+    font-weight: bold;
+    color: #D4E3E3;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #D4E3E3, #9FC0C1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.5vw;
+    color: #9FC0C1;
+    margin-bottom: 40px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.section-title {
+    font-size: 3vw;
+    color: #D4E3E3;
+    text-align: center;
+    margin: 4rem 0 2rem;
+}
+
+.glass-card {
+    background: rgba(20, 31, 31, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(159, 192, 193, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: #D4E3E3;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(43, 205, 255, 0.5);
+}
+
+.cards-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 0 4vw;
+    margin-bottom: 4rem;
+}
+
+.workflow-card {
+    text-align: center;
+}
+.workflow-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #9FC0C1;
+}
+
+.side-by-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 0 4vw;
+    margin-bottom: 4rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 0 4vw;
+    margin-bottom: 4rem;
+}
+
+.stat-card { background: rgba(28, 43, 43, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(159, 192, 193, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);; 
+    text-align: center;
+    padding: 2rem;
+}
+
+.stat-number {
+    font-size: 2.5vw;
+    font-weight: bold;
+    color: #9FC0C1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #9FC0C1;
+    font-size: 1vw;
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 4vw;
+    margin-bottom: 4rem;
+}
+
+.why-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.2vw;
+    color: #9FC0C1;
+}
+
+.why-icon {
+    color: #9FC0C1;
+}
+
+.landing-footer {
+    background: linear-gradient(90deg, #D4E3E3, #9FC0C1);
+    padding: 4rem 4vw 2rem;
+    color: #9FC0C1;
+    border-top: 1px solid rgba(159, 192, 193, 0.2);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    border-radius: 0 0 8px 8px; /* Match the .container border radius */
+}
+.landing-footer a {
+    color: #9FC0C1;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.landing-footer a:hover {
+    color: #D4E3E3;
+}
+.footer-bottom {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(159, 192, 193, 0.2);
+}
+
+.feature_display.landing { background: rgba(28, 43, 43, 0.4) !important; 
+    background: rgba(30, 41, 59, 0.4);
+    border-radius: 20px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid rgba(159, 192, 193, 0.1);
+    height: auto;
+}
+.feature_display.landing h3 {
+    margin-top: 0;
+}
+.landing-ul {
+    color: #D4E3E3; 
+    font-size: 1.2vw; 
+    text-align: left; 
+    margin-top: 10px;
+    line-height: 1.8;
+    list-style-type: none;
+    padding: 0;
+}
+</style>
+
+<div class="video-bg">
+    <video id="bgVideo" preload="true" autoplay loop muted>
+        <source id="videoSource" src="static/Resources/Videos/bg_vid1.mp4" type="video/mp4"/>
+    </video>
+</div>
+
+<!-- SECTION 1: HERO SECTION -->
+<div class="landing-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Eco Bazzar – Decentralized Energy Trading Platform</h1>
+        <p class="hero-subtitle">Buy, Sell, and Track Energy Units Transparently Using Blockchain.</p>
+        <div class="hero-buttons">
+            <a href="/home" class="fill_button">Go to Dashboard</a>
+            <a href="/transactions" class="button">View Marketplace</a>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <!-- SECTION 2: HOW Eco Bazzar WORKS -->
+    <h2 class="section-title">How Eco Bazzar Works</h2>
+    <div class="cards-grid-4">
+        <div class="glass-card workflow-card">
+            <div class="workflow-icon">☀️</div>
+            <h3>1. Generate Energy</h3>
+            <p>Generate or own sustainable solar energy units.</p>
+        </div>
+        <div class="glass-card workflow-card">
+            <div class="workflow-icon">🔗</div>
+            <h3>2. Tokenization</h3>
+            <p>Convert physical energy into blockchain assets.</p>
+        </div>
+        <div class="glass-card workflow-card">
+            <div class="workflow-icon">💱</div>
+            <h3>3. Buy & Sell</h3>
+            <p>Trade seamlessly via our transparent marketplace.</p>
+        </div>
+        <div class="glass-card workflow-card">
+            <div class="workflow-icon">✅</div>
+            <h3>4. Validation</h3>
+            <p>Blockchain verified and immutable transactions.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: SYSTEM FEATURES -->
+    <h2 class="section-title">System Features</h2>
+    
+    <div class="feature_display landing">
+        <div class="feature_desc" style="text-align: left; align-items: flex-start;">
+            <h3>Real-Time Transactions</h3>
+            <ul class="landing-ul">
+                <li>• Pending Transactions Queue</li>
+                <li>• Transactions Under Process</li>
+                <li>• Verified Transaction History</li>
+            </ul>
+        </div>
+        <img alt="Real Time Transactions" src="static/Resources/images/blockchain.png" style="max-height: 180px; width: auto;"/>
+    </div>
+
+    <div class="feature_display landing" style="flex-direction: row-reverse;">
+        <div class="feature_desc" style="text-align: left; align-items: flex-start;">
+            <h3>Energy Wallet System</h3>
+            <ul class="landing-ul">
+                <li>• Real-time Units Available</li>
+                <li>• Max Battery Capacity Monitoring</li>
+                <li>• Quick Buy / Sell Interface</li>
+            </ul>
+        </div>
+        <img alt="Wallet" src="static/Resources/images/energy.png" style="max-height: 180px; width: auto;"/>
+    </div>
+
+    <div class="feature_display landing">
+        <div class="feature_desc" style="text-align: left; align-items: flex-start;">
+            <h3>Transparent Marketplace</h3>
+            <ul class="landing-ul">
+                <li>• Verified Seller & Buyer IDs</li>
+                <li>• Exact Unit Quantities</li>
+                <li>• Clear Total Pricing</li>
+                <li>• Immutable Trade Records</li>
+            </ul>
+        </div>
+        <img alt="Marketplace" src="static/Resources/images/community.png" style="max-height: 180px; width: auto;"/>
+    </div>
+
+    <div class="feature_display landing" style="flex-direction: row-reverse;">
+        <div class="feature_desc" style="text-align: left; align-items: flex-start;">
+            <h3>Secure Smart Contracts</h3>
+            <ul class="landing-ul">
+                <li>• Automated Asset Minting</li>
+                <li>• On-Chain Validation</li>
+                <li>• Immutable Algorand Architecture</li>
+            </ul>
+        </div>
+        <img alt="Smart Contract" src="static/Resources/images/env.png" style="max-height: 180px; width: auto;"/>
+    </div>
+
+    <!-- SECTION 4: BUYER & SELLER FLOW -->
+    <h2 class="section-title">Dual Experience</h2>
+    <div class="side-by-side">
+        <div class="glass-card">
+            <h3 style="color: #9FC0C1; text-align: center; font-size: 2vw; margin-bottom: 20px;">For Buyers</h3>
+            <ul style="list-style-type: none; padding: 0; font-size: 1.2vw; line-height: 2;">
+                <li>✓ Browse available energy units</li>
+                <li>✓ Check verified seller details</li>
+                <li>✓ Securely purchase units</li>
+                <li>✓ View dynamic portfolio</li>
+                <li>✓ Track transaction status</li>
+            </ul>
+        </div>
+        <div class="glass-card">
+            <h3 style="color: #9FC0C1; text-align: center; font-size: 2vw; margin-bottom: 20px;">For Sellers</h3>
+            <ul style="list-style-type: none; padding: 0; font-size: 1.2vw; line-height: 2;">
+                <li>✓ List energy units instantly</li>
+                <li>✓ Define custom unit pricing</li>
+                <li>✓ Monitor active sales</li>
+                <li>✓ Build reputation & ratings</li>
+                <li>✓ Track blockchain earnings</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 5: LIVE PLATFORM STATISTICS -->
+    <h2 class="section-title">Platform Impact</h2>
+    <div class="stats-grid">
+        <div class="glass-card stat-card">
+            <div class="stat-number">1,245+</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-number">45K+</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-number">890K</div>
+            <div class="stat-label">Energy Units Traded</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Blockchain Verifications</div>
+        </div>
+    </div>
+
+    <!-- SECTION 6: WHY Eco Bazzar -->
+    <h2 class="section-title">Why Eco Bazzar?</h2>
+    <div class="why-grid">
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Decentralized Control
+        </div>
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Complete Transparency
+        </div>
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Resource Efficiency
+        </div>
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Cryptographic Security
+        </div>
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Real-Time Updates
+        </div>
+        <div class="glass-card why-item">
+            <span class="why-icon">✔</span> Smart Contract Based
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 7: FOOTER -->
+<div class="landing-footer">
+    <div>
+        <strong style="color: #D4E3E3; display: block; margin-bottom: 1rem;">Platform</strong>
+        <a href="/home">Dashboard</a>
+        <a href="/transactions">Transactions</a>
+        <a href="/about">About Us</a>
+    </div>
+    <div>
+        <strong style="color: #D4E3E3; display: block; margin-bottom: 1rem;">Resources</strong>
+        <a href="#">Documentation</a>
+        <a href="https://github.com/GlaucousGlaucus/Algorand-Blockchain-Project" target="_blank">GitHub Repo</a>
+        <a href="#">Smart Contracts</a>
+    </div>
+    <div>
+        <strong style="color: #D4E3E3; display: block; margin-bottom: 1rem;">Support</strong>
+        <a href="#">Contact Us</a>
+        <a href="#">Help Center</a>
+        <a href="#">Community Forum</a>
+    </div>
+    <div>
+        <strong style="color: #D4E3E3; display: block; margin-bottom: 1rem;">Legal</strong>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Policy</a>
+    </div>
+    <div class="footer-bottom">
+        2024 &copy; Eco Bazzar. All rights reserved. Decentralized Energy Trading.
+    </div>
+</div>
+
+<script>
+    // Numbers animation script for the live stats
+    document.addEventListener("DOMContentLoaded", () => {
+        const counters = document.querySelectorAll(".stat-number");
+        const options = { threshold: 0.5 };
+        
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const counter = entry.target;
+                    // Reset animation just in case
+                    counter.style.opacity = 0;
+                    setTimeout(() => {
+                        counter.style.transition = "opacity 1s";
+                        counter.style.opacity = 1;
+                    }, 100);
+                    observer.unobserve(counter);
+                }
+            });
+        }, options);
+        
+        counters.forEach(counter => observer.observe(counter));
+    });
+</script>
+
+{% endblock content %}
